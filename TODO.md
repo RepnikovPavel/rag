@@ -1,0 +1,16 @@
+- model zoo support  
+- model as a lambda  
+- text documents filters  
+- pdf parsers  
+- excel parsers  
+- tables parsers  
+- html parsers
+- git like approach to handle rag database/index  
+- token consumption managment  
+- hugging face to prod pipeline  
+- user friendly cli  
+- install via docker    
+- install via apt   
+- sqlite minimalistic approach  
+- auto system deps tuning  
+- lib as a system service  
