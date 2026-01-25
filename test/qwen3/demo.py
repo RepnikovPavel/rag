@@ -28,7 +28,7 @@ if __name__ == "__main__":
     args = argparser.parse_args()
     ckptdir = args.ckptdir
     os.makedirs(ckptdir,exist_ok=True)
-
+    model_path = f"{ckptdir}/models--Qwen--Qwen3-Embedding-8B/snapshots/main"
     # Each query must come with a one-sentence instruction that describes the task
     task = 'Given a web search query, retrieve relevant passages that answer the query'
 
@@ -43,16 +43,19 @@ if __name__ == "__main__":
     ]
     input_texts = queries + documents
 
-    tokenizer = AutoTokenizer.from_pretrained(
-        'Qwen/Qwen3-Embedding-8B', 
-        padding_side='left',
-        cache_dir = ckptdir
-        )
-    model = AutoModel.from_pretrained(
-        'Qwen/Qwen3-Embedding-8B',
-        cache_dir = ckptdir
-        )
-
+    # tokenizer = AutoTokenizer.from_pretrained(
+    #     'Qwen/Qwen3-Embedding-8B', 
+    #     padding_side='left',
+    #     cache_dir = ckptdir,
+    #     local_files_only=True
+    #     )
+    # model = AutoModel.from_pretrained(
+    #     'Qwen/Qwen3-Embedding-8B',
+    #     cache_dir = ckptdir,
+    #     local_files_only=True
+    #     )
+    tokenizer = AutoTokenizer.from_pretrained(model_path, local_files_only=True)
+    model = AutoModel.from_pretrained(model_path, local_files_only=True)
     # We recommend enabling flash_attention_2 for better acceleration and memory saving.
     # model = AutoModel.from_pretrained('Qwen/Qwen3-Embedding-0.6B', attn_implementation="flash_attention_2", torch_dtype=torch.float16).cuda()
 
