@@ -1,6 +1,8 @@
 FROM modelscu124:latest
-RUN pip install transformers vllm
-RUN pip install sentence-transformers
-RUN pip install huggingface
 
+RUN pip install transformers --verbose --verbose  
+RUN pip install vllm --verbose --verbose  
+RUN pip install sentence-transformers --verbose --verbose  
+RUN pip install huggingface --verbose --verbose  
+RUN pip install huggingface_hub[hf_transfer] --verbose --verbose  
 WORKDIR /app
