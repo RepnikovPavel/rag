@@ -10,4 +10,6 @@ RUN python3 -m pip install optimum
 RUN pip install --upgrade --upgrade-strategy eager optimum[onnx]
 RUN pip install --upgrade --upgrade-strategy eager optimum[onnxruntime]
 RUN pip install --upgrade --upgrade-strategy eager optimum[onnxruntime-gpu]
+RUN pip install transformers==4.51.0
+RUN pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
 WORKDIR /app
