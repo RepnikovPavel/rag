@@ -5,4 +5,9 @@ RUN pip install vllm --verbose --verbose
 RUN pip install sentence-transformers --verbose --verbose  
 RUN pip install huggingface --verbose --verbose  
 RUN pip install huggingface_hub[hf_transfer] --verbose --verbose  
+RUN pip install --upgrade pip setuptools wheel packaging --upgrade-strategy eager
+RUN python3 -m pip install optimum
+RUN pip install --upgrade --upgrade-strategy eager optimum[onnx]
+RUN pip install --upgrade --upgrade-strategy eager optimum[onnxruntime]
+RUN pip install --upgrade --upgrade-strategy eager optimum[onnxruntime-gpu]
 WORKDIR /app
