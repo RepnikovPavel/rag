@@ -55,7 +55,7 @@ if __name__ == "__main__":
     #     local_files_only=True
     #     )
     tokenizer = AutoTokenizer.from_pretrained(model_path, local_files_only=True)
-    model = AutoModel.from_pretrained(model_path, local_files_only=True)
+    model = AutoModel.from_pretrained(model_path, local_files_only=True).eval()
     # We recommend enabling flash_attention_2 for better acceleration and memory saving.
     # model = AutoModel.from_pretrained('Qwen/Qwen3-Embedding-0.6B', attn_implementation="flash_attention_2", torch_dtype=torch.float16).cuda()
 
