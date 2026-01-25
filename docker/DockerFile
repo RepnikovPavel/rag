@@ -1,0 +1,6 @@
+FROM modelscu124:latest
+RUN pip install transformers vllm
+RUN pip install sentence-transformers
+RUN pip install huggingface
+
+WORKDIR /app
