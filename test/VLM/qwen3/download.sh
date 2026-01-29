@@ -46,8 +46,9 @@ echo "========================================"
 echo "⬇️  ЧАСТЬ 1: Веса модели (96 файлов)..."
 echo "========================================"
 
-# Цикл от 001 до 096 с добавлением нулей (padding)
-for i in {001..096}; do
+# ИСПРАВЛЕННЫЙ ЦИКЛ: {1..96} вместо {001..096}
+# printf автоматически добавит ведущие нули (1 -> 00001, 96 -> 00096)
+for i in {1..96}; do
     # Формируем имя файла: model-00001-of-00096.safetensors
     FILE_NAME=$(printf "model-%05d-of-00096.safetensors" "$i")
     FILE_URL="https://huggingface.co/$MODEL_ID/resolve/main/$FILE_NAME"
@@ -64,7 +65,7 @@ echo "========================================"
 echo "⬇️  ЧАСТЬ 2: Конфигурации и Токенизатор..."
 echo "========================================"
 
-# Список всех нужных файлов (взято из вашего сообщения)
+# Список всех нужных файлов
 CONFIG_FILES=(
     "config.json"
     "generation_config.json"
@@ -75,7 +76,7 @@ CONFIG_FILES=(
     "video_preprocessor_config.json"
     "vocab.json"
     "merges.txt"
-    "chat_template.json" # Важно для чат-моделей
+    "chat_template.json"
 )
 
 for file in "${CONFIG_FILES[@]}"; do

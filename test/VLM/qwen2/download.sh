@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 # download_qwen2_vl_72b.sh - Скачивание Qwen/Qwen2-VL-72B-Instruct
-# Основано на точном списке файлов (38 шард_weights + конфиги)
 
 set -euo pipefail
 
 # --- НАСТРОЙКИ ---
 MODEL_ID="Qwen/Qwen2-VL-72B-Instruct"
-# Папка для сохранения (убедитесь, что есть ~150 ГБ места)
 TARGET_DIR="/mnt/nvme/huggingface/Qwen2-VL-72B-Instruct"
 
 echo "🚀 Скачиваем $MODEL_ID"
@@ -24,7 +22,7 @@ do_download() {
     
     echo "📥 Скачиваю: $filename"
     
-    # Wget с докачкой (-c), таймаутом и 3 попытками при ошибке
+    # Wget с докачкой (-c), таймаутом и 3 попытками
     wget -c --timeout=3600 --tries=3 --continue \
          --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
          -O "$filename" "$url" || {
@@ -40,9 +38,9 @@ echo "========================================"
 echo "⬇️  ЧАСТЬ 1: Веса модели (38 файлов)..."
 echo "========================================"
 
-# Цикл от 001 до 038 (Qwen2-VL разбита на 38 частей)
-for i in {001..038}; do
-    # Формируем имя файла: model-00001-of-00038.safetensors
+# ИСПРАВЛЕННЫЙ ЦИКЛ: {1..38} вместо {001..038}
+for i in {1..38}; do
+    # printf форматирует 1 как 00001, 8 как 00008 и т.д.
     FILE_NAME=$(printf "model-%05d-of-00038.safetensors" "$i")
     FILE_URL="https://huggingface.co/$MODEL_ID/resolve/main/$FILE_NAME"
     
@@ -58,17 +56,16 @@ echo "========================================"
 echo "⬇️  ЧАСТЬ 2: Конфигурации, Токенизатор, VL-препроцессинг..."
 echo "========================================"
 
-# Список всех нужных файлов (полный список из вашего сообщения)
 CONFIG_FILES=(
     "config.json"
     "generation_config.json"
     "model.safetensors.index.json"
-    "preprocessor_config.json" # Важно для Vision-Language модели
+    "preprocessor_config.json"
     "tokenizer.json"
     "tokenizer_config.json"
     "vocab.json"
-    "merges.txt"      # Важно для токенизатора
-    "chat_template.json" # Шаблон чата
+    "merges.txt"
+    "chat_template.json"
     "README.md"
     "LICENSE"
 )

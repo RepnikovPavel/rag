@@ -53,8 +53,9 @@ echo "========================================"
 echo "⬇️  ЧАСТЬ 1: Веса модели (37 файлов)..."
 echo "========================================"
 
-# Цикл от 001 до 037 (Llama 3.2 разбита на 37 частей)
-for i in {001..037}; do
+# ИСПРАВЛЕННЫЙ ЦИКЛ: {1..37} вместо {001..037}
+# printf форматирует 1 как 00001, 37 как 00037, что решает проблему с восьмеричными числами
+for i in {1..37}; do
     # Формируем имя файла: model-00001-of-00037.safetensors
     FILE_NAME=$(printf "model-%05d-of-00037.safetensors" "$i")
     FILE_URL="https://huggingface.co/$MODEL_ID/resolve/main/$FILE_NAME"
@@ -71,12 +72,12 @@ echo "========================================"
 echo "⬇️  ЧАСТЬ 2: Конфигурации, Токенизатор, Vision..."
 echo "========================================"
 
-# Список всех нужных файлов (взято из вашего сообщения)
+# Список всех нужных файлов
 CONFIG_FILES=(
     "config.json"
     "generation_config.json"
     "model.safetensors.index.json"
-    "preprocessor_config.json" # Важно для Vision компонента
+    "preprocessor_config.json"
     "tokenizer.json"
     "tokenizer_config.json"
     "special_tokens_map.json"
