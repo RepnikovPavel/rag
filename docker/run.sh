@@ -12,7 +12,7 @@ fi
 MOUNT_PATH=$1
  
 IMG_NAME=ragcu124:latest
-CONTAINER_NAME=
+CONTAINER_NAME=ragcontainer
 
 xhost +local:docker
 
