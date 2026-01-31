@@ -28,4 +28,14 @@ RUN pip install transformers -vv || true && \
     pip install accelerate || true && \
     true
 
+RUN pip install tree-sitter tree-sitter-languages tree-sitter-python \
+    -i https://pypi.tuna.tsinghua.edu.cn/simple \
+    --trusted-host pypi.tuna.tsinghua.edu.cn \
+    --timeout 120 --retries 5
+
+RUN apt install wget
+RUN pip install scrapy  
+
+
+
 WORKDIR /app

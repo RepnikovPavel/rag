@@ -1,1 +1,1 @@
-docker exec -it ragdev bash
+docker exec -it ragcontainer bash
