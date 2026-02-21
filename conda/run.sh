@@ -8,4 +8,5 @@ if [ ! -f "$MINICONDA_PATH/bin/conda" ]; then
     exit 1
 fi
 
-source $MINICONDA_PATH/bin/activate && conda activate modelscu124
+source $MINICONDA_PATH/bin/activate  
+conda activate modelscu124
