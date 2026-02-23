@@ -1,0 +1,6 @@
+[submodule "transformers"]
+	path = transformers
+	url = https://github.com/RepnikovPavel/transformers.git
+[submodule "flash-attention"]
+	path = flash-attention
+	url = https://github.com/RepnikovPavel/flash-attention.git

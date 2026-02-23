@@ -24,11 +24,20 @@ def get_detailed_instruct(task_description: str, query: str) -> str:
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
-    argparser.add_argument('--ckptdir',type=str,required=True)
+    argparser.add_argument('--ckptdir',type=str,required=False,default='/mnt/nvme/huggingface')
     args = argparser.parse_args()
     ckptdir = args.ckptdir
     os.makedirs(ckptdir,exist_ok=True)
+    device = 'cuda'
     model_path = f"{ckptdir}/models--Qwen--Qwen3-Embedding-8B/snapshots/main"
+    max_length = 8192
+    tokenizer = AutoTokenizer.from_pretrained(model_path, local_files_only=True)
+    # model = AutoModel.from_pretrained(model_path, local_files_only=True,attn_implementation="flash_attention_2",torch_dtype=torch.float16).eval().to('cuda')
+    # model = AutoModel.from_pretrained(model_path, local_files_only=True).eval().to('cpu')
+    model = AutoModel.from_pretrained(model_path, local_files_only=True,dtype=torch.float16).eval().to('cuda')
+
+    print('type(model):',type(model))
+
     # Each query must come with a one-sentence instruction that describes the task
     task = 'Given a web search query, retrieve relevant passages that answer the query'
 
@@ -43,23 +52,12 @@ if __name__ == "__main__":
     ]
     input_texts = queries + documents
 
-    # tokenizer = AutoTokenizer.from_pretrained(
-    #     'Qwen/Qwen3-Embedding-8B', 
-    #     padding_side='left',
-    #     cache_dir = ckptdir,
-    #     local_files_only=True
-    #     )
-    # model = AutoModel.from_pretrained(
-    #     'Qwen/Qwen3-Embedding-8B',
-    #     cache_dir = ckptdir,
-    #     local_files_only=True
-    #     )
-    tokenizer = AutoTokenizer.from_pretrained(model_path, local_files_only=True)
-    model = AutoModel.from_pretrained(model_path, local_files_only=True).eval()
+
+
+    # model = AutoModel.from_pretrained(model_path, local_files_only=True,attn_implementation="flash_attention_2").eval()
     # We recommend enabling flash_attention_2 for better acceleration and memory saving.
     # model = AutoModel.from_pretrained('Qwen/Qwen3-Embedding-0.6B', attn_implementation="flash_attention_2", torch_dtype=torch.float16).cuda()
 
-    max_length = 8192
 
     # Tokenize the input texts
     batch_dict = tokenizer(
