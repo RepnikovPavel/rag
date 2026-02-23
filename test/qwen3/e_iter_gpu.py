@@ -123,8 +123,6 @@ if __name__ == "__main__":
         outputs = model.iter_forward_gpu(
             input_ids=input_ids,
             attention_mask=attention_mask,
-            n_sequences=n_sequences,
-            encodings=encodings,
             use_cache=False
         )
         # print('embeddings.size()',embeddings.size())
