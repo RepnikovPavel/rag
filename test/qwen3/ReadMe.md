@@ -12,3 +12,5 @@ python3 test/qwen3/demo_embeddings.py --ckptdir=/mnt/nvme/transformers_ckpts
 ```sh
 python3 test/qwen3/demo_reranker.py --ckptdir=/mnt/nvme/transformers_ckpts
 ```
+
+

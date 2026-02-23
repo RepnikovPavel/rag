@@ -61,6 +61,7 @@ import os
 import time
 from tqdm import tqdm
 
+
 def last_token_pool(last_hidden_states: Tensor,
                  attention_mask: Tensor) -> Tensor:
     left_padding = (attention_mask[:, -1].sum() == attention_mask.shape[0])
@@ -86,7 +87,7 @@ if __name__ == "__main__":
     max_length = 8192
     tokenizer = AutoTokenizer.from_pretrained(model_path, local_files_only=True)
     # model = AutoModel.from_pretrained(model_path, local_files_only=True,attn_implementation="flash_attention_2",torch_dtype=torch.float16).eval().to('cuda')
-    model = AutoModel.from_pretrained(model_path, local_files_only=True).eval().to('cpu')
+    model = AutoModel.from_pretrained(model_path, local_files_only=True,attn_implementation="flash_attention_2").eval().to('cpu')
     # model = AutoModel.from_pretrained(model_path, local_files_only=True,dtype=torch.float16).eval().to('cuda')
 
     print('type(model):',type(model))
@@ -115,20 +116,18 @@ if __name__ == "__main__":
         return_tensors="pt",
     )
     batch_dict.to(model.device)
-    print('first call')
+    
+    # first calls
     with torch.no_grad():
         input_ids= batch_dict['input_ids']
         attention_mask =batch_dict['attention_mask']
         n_sequences=batch_dict.n_sequences
         encodings=batch_dict.encodings
         # outputs = model(**batch_dict)
-        outputs = model.iter_forward(
+        outputs = model.iter_forward_gpu_flash_attn(
             input_ids=input_ids,
             attention_mask=attention_mask,
-            n_sequences=n_sequences,
-            encodings=encodings,
-            use_cache=False,
-            verbose=True
+            use_cache=False
         )
         # print('embeddings.size()',embeddings.size())
         embeddings = last_token_pool(outputs.last_hidden_state, batch_dict['attention_mask'])
@@ -136,10 +135,8 @@ if __name__ == "__main__":
         # normalize embeddings
         embeddings = F.normalize(embeddings, p=2, dim=1)
         scores = (embeddings[:2] @ embeddings[2:].T)
-    # [[0.07525634765625, 0.74951171875], [0.6318359375, 0.0880126953125]]
-    # будут ли скоры такими же если запускать модель отдельно на documents и отдельно на qeuries?
     print(scores.tolist())
-            
+    
     N_runs = 8
     for run_idx in tqdm(range(N_runs),desc='perf test'):
         with torch.no_grad():
@@ -150,7 +147,7 @@ if __name__ == "__main__":
             n_sequences=batch_dict.n_sequences
             encodings=batch_dict.encodings
             # outputs = model(**batch_dict)
-            outputs = model.iter_forward(
+            outputs = model.iter_forward_gpu_flash_attn(
                 input_ids=input_ids,
                 attention_mask=attention_mask,
                 use_cache=False
@@ -169,4 +166,3 @@ if __name__ == "__main__":
     # [[0.07525634765625, 0.74951171875], [0.6318359375, 0.0880126953125]]
     # будут ли скоры такими же если запускать модель отдельно на documents и отдельно на qeuries?
     print(scores.tolist())
-
