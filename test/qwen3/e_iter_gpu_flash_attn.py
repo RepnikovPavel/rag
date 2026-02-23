@@ -123,16 +123,12 @@ if __name__ == "__main__":
         attention_mask =batch_dict['attention_mask']
         n_sequences=batch_dict.n_sequences
         encodings=batch_dict.encodings
-        # outputs = model(**batch_dict)
         outputs = model.iter_forward_gpu_flash_attn(
             input_ids=input_ids,
             attention_mask=attention_mask,
             use_cache=False
         )
-        # print('embeddings.size()',embeddings.size())
         embeddings = last_token_pool(outputs.last_hidden_state, batch_dict['attention_mask'])
-        print('embeddings.size()',embeddings.size())
-        # normalize embeddings
         embeddings = F.normalize(embeddings, p=2, dim=1)
         scores = (embeddings[:2] @ embeddings[2:].T)
     print(scores.tolist())
@@ -154,7 +150,7 @@ if __name__ == "__main__":
             )
             torch.cuda.synchronize()
             t2 = time.perf_counter_ns()
-            print(f'e2e:{(t2-t1)/1e6:.1f} ms\n')
+            print(f'\ne2e:{(t2-t1)/1e6:.1f} ms\n')
             # print('embeddings.size()',embeddings.size())
             embeddings = last_token_pool(outputs.last_hidden_state, batch_dict['attention_mask'])
             print('embeddings.size()',embeddings.size())
