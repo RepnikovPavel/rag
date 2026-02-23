@@ -36,6 +36,18 @@ def convert_and_load_state_dict_in_model(
     tp_plan: dict[str, str] | None,
     disk_offload_index: dict | None = None,
 ):
+self.config._attn_implementation controls attention impl call
+_global_mapping = {
+    "flash_attention_3": flash_attention_forward,
+    "flash_attention_2": flash_attention_forward,
+    "flex_attention": flex_attention_forward,
+    "sdpa": sdpa_attention_forward, <- this is default for qwen3 code
+    "paged|flash_attention_3": paged_attention_forward,
+    "paged|flash_attention_2": paged_attention_forward,
+    "paged|sdpa": sdpa_attention_paged_forward,
+    "paged|eager": eager_paged_attention_forward,
+}
+sdpa code -> transformers/src/transformers/integrations/sdpa_attention.py
 
 """
 
@@ -93,14 +105,6 @@ if __name__ == "__main__":
     ]
     input_texts = queries + documents
 
-
-
-    # model = AutoModel.from_pretrained(model_path, local_files_only=True,attn_implementation="flash_attention_2").eval()
-    # We recommend enabling flash_attention_2 for better acceleration and memory saving.
-    # model = AutoModel.from_pretrained('Qwen/Qwen3-Embedding-0.6B', attn_implementation="flash_attention_2", torch_dtype=torch.float16).cuda()
-
-
-    # Tokenize the input texts
     batch_dict = tokenizer(
         input_texts,
         padding=True,
@@ -109,24 +113,26 @@ if __name__ == "__main__":
         return_tensors="pt",
     )
     batch_dict.to(model.device)
+    
     with torch.no_grad():
         input_ids= batch_dict['input_ids']
         attention_mask =batch_dict['attention_mask']
         n_sequences=batch_dict.n_sequences
         encodings=batch_dict.encodings
         # outputs = model(**batch_dict)
-        outputs = model.no_wrapper_forward(
+        outputs = model.iter_forward_gpu(
             input_ids=input_ids,
             attention_mask=attention_mask,
             n_sequences=n_sequences,
             encodings=encodings,
             use_cache=False
         )
+        # print('embeddings.size()',embeddings.size())
         embeddings = last_token_pool(outputs.last_hidden_state, batch_dict['attention_mask'])
-
+        print('embeddings.size()',embeddings.size())
         # normalize embeddings
         embeddings = F.normalize(embeddings, p=2, dim=1)
         scores = (embeddings[:2] @ embeddings[2:].T)
-
+    # [[0.07525634765625, 0.74951171875], [0.6318359375, 0.0880126953125]]
+    # будут ли скоры такими же если запускать модель отдельно на documents и отдельно на qeuries?
     print(scores.tolist())
-    # [[0.7645568251609802, 0.14142508804798126], [0.13549736142158508, 0.5999549627304077]]
