@@ -4,3 +4,6 @@
 [submodule "flash-attention"]
 	path = flash-attention
 	url = https://github.com/RepnikovPavel/flash-attention.git
+[submodule "dots.mocr"]
+	path = dots.mocr
+	url = https://github.com/RepnikovPavel/dots.mocr.git
